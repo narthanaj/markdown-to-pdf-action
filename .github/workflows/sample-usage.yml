@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Convert Markdown to PDF
-        uses: your-username/markdown-to-pdf-action@v1
+        uses: narthanaj/markdown-to-pdf-action@v1
         with:
           markdown_dir: './docs'
           markdown_file: ${{ github.event.inputs.markdown_file }}

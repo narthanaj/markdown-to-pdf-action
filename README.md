@@ -21,7 +21,7 @@ steps:
     uses: actions/checkout@v4
   
   - name: Convert Markdown to PDF
-    uses: your-username/markdown-to-pdf-action@v1
+    uses: narthanaj/markdown-to-pdf-action@v1
     with:
       markdown_file: 'README.md'
       output_dir: './pdf-output'
@@ -35,7 +35,7 @@ steps:
     uses: actions/checkout@v4
   
   - name: Convert Markdown to PDF
-    uses: your-username/markdown-to-pdf-action@v1
+    uses: narthanaj/markdown-to-pdf-action@v1
     with:
       markdown_dir: './docs'
       markdown_file: 'guide.md'
