@@ -183,7 +183,7 @@ const convertMarkdownToPdf = async (markdownFilePath) => {
     
     const puppeteerOptions = {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: "new"
+      headless: true // Use boolean for better compatibility with older Puppeteer versions
     };
     
     // Only specify executablePath if running in Docker
@@ -213,25 +213,37 @@ const convertMarkdownToPdf = async (markdownFilePath) => {
     `);
     
     // Configure the page for better emoji support
-    await page.evaluateHandle('document.fonts.ready');
+    try {
+      // Try to wait for fonts to load
+      await page.evaluate(() => {
+        // This will resolve when fonts are loaded or reject if not supported
+        return Promise.resolve(document.fonts.ready).catch(() => Promise.resolve());
+      });
+    } catch (err) {
+      console.log("Font loading check not fully supported, continuing anyway");
+    }
 
-    // Add additional font configuration for emoji support
-    await page.addStyleTag({
-      content: `
-        @font-face {
-          font-family: 'Noto Color Emoji';
-          src: local('Noto Color Emoji');
-        }
-        
-        @font-face {
-          font-family: 'Symbola';
-          src: local('Symbola');
-        }
-      `
-    });
+    try {
+      // Add additional font configuration for emoji support
+      await page.addStyleTag({
+        content: `
+          @font-face {
+            font-family: 'Noto Color Emoji';
+            src: local('Noto Color Emoji');
+          }
+          
+          @font-face {
+            font-family: 'Symbola';
+            src: local('Symbola');
+          }
+        `
+      });
+    } catch (err) {
+      console.log("Could not add font configuration:", err.message);
+    }
 
     // Ensure fonts are loaded before generating PDF
-    await page.waitForTimeout(500);
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     // Generate PDF
     await page.pdf({
