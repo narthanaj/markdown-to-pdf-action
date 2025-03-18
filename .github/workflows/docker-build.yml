@@ -31,7 +31,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: yourdockerhub/markdown-to-pdf-action
+          images: narthanaj/markdown-to-pdf-action
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -47,5 +47,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=yourdockerhub/markdown-to-pdf-action:buildcache
-          cache-to: type=registry,ref=yourdockerhub/markdown-to-pdf-action:buildcache,mode=max
+          cache-from: type=registry,ref=narthanaj/markdown-to-pdf-action:buildcache
+          cache-to: type=registry,ref=narthanaj/markdown-to-pdf-action:buildcache,mode=max
