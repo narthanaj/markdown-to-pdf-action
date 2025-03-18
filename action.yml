@@ -1,0 +1,55 @@
+name: 'Markdown to PDF Converter'
+description: 'Converts Markdown files to PDF documents with customizable styling options'
+author: 'Your Name'
+branding:
+  icon: 'file-text'
+  color: 'blue'
+
+inputs:
+  markdown_dir:
+    description: 'Directory containing markdown files to convert'
+    required: false
+    default: '.'
+  markdown_file:
+    description: 'Specific markdown file to convert (relative to markdown_dir)'
+    required: false
+  output_dir:
+    description: 'Directory to save the generated PDFs'
+    required: false
+    default: './pdf-output'
+  pdf_options:
+    description: 'Additional options for PDF generation in JSON format'
+    required: false
+    default: '{}'
+  css_file:
+    description: 'Custom CSS file for styling the PDF output'
+    required: false
+  table_of_contents:
+    description: 'Generate table of contents'
+    required: false
+    default: 'false'
+  include_metadata:
+    description: 'Whether to include YAML front matter metadata'
+    required: false
+    default: 'true'
+  highlight_style:
+    description: 'Syntax highlighting style (e.g., github, vs, atom-one)'
+    required: false
+    default: 'github'
+  output_filename:
+    description: 'Custom output filename (without extension, defaults to same as input)'
+    required: false
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.markdown_dir }}
+    - ${{ inputs.markdown_file }}
+    - ${{ inputs.output_dir }}
+    - ${{ inputs.pdf_options }}
+    - ${{ inputs.css_file }}
+    - ${{ inputs.table_of_contents }}
+    - ${{ inputs.include_metadata }}
+    - ${{ inputs.highlight_style }}
+    - ${{ inputs.output_filename }}
