@@ -1,0 +1,38 @@
+name: Test Markdown to PDF Action
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Test Action
+        uses: ./
+        with:
+          markdown_file: 'README.md'
+          output_dir: './test-output'
+          table_of_contents: 'true'
+      
+      - name: Verify Output
+        run: |
+          if [ ! -f "./test-output/README.pdf" ]; then
+            echo "PDF file was not created!"
+            exit 1
+          else
+            echo "PDF file created successfully!"
+            ls -la ./test-output/
+          fi
+      
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-pdf
+          path: './test-output/*.pdf'

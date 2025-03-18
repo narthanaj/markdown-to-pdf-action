@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
-const markdownpdf = require('markdown-pdf');
+// Using puppeteer directly for PDF generation instead of markdown-pdf
 const puppeteer = require('puppeteer');
 const markdownIt = require('markdown-it');
 const highlightjs = require('markdown-it-highlightjs');
@@ -179,11 +179,20 @@ const convertMarkdownToPdf = async (markdownFilePath) => {
     const outputPath = path.join(outputDir, pdfFileName);
     
     // Launch puppeteer
-    const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium',
+    // Check if we're running in a Docker container (GitHub Action) or locally
+    const isDocker = fs.existsSync('/.dockerenv') || process.env.GITHUB_ACTIONS;
+    
+    const puppeteerOptions = {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true
-    });
+      headless: "new"
+    };
+    
+    // Only specify executablePath if running in Docker
+    if (isDocker) {
+      puppeteerOptions.executablePath = '/usr/bin/chromium';
+    }
+    
+    const browser = await puppeteer.launch(puppeteerOptions);
     
     const page = await browser.newPage();
     
