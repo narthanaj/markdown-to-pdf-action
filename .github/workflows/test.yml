@@ -3,36 +3,78 @@ name: Test Markdown to PDF Action
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '.github/workflows/docker-build.yml'
+      - 'README.md'
+      - 'DEVELOPMENT.md'
+      - 'SECURITY.md'
+      - 'DOCKERHUB-SETUP.md'
+      - 'LICENSE'
   pull_request:
     branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  test:
+  # First test the local build
+  test-local:
+    name: Test Local Docker Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Test Action
-        uses: ./
-        with:
-          markdown_file: 'README.md'
-          output_dir: './test-output'
-          table_of_contents: 'true'
+      - name: Build Docker image locally
+        run: docker build -t local-md-to-pdf-test .
       
-      - name: Verify Output
+      - name: Test Docker image
         run: |
-          if [ ! -f "./test-output/README.pdf" ]; then
+          # Create test directories
+          mkdir -p test-files
+          mkdir -p test-output
+          
+          # Create a test markdown file
+          echo "# Test Heading\n\nThis is a test markdown file." > test-files/test.md
+          
+          # Run the action's Docker image directly
+          docker run -v ${{ github.workspace }}/test-files:/test-files -v ${{ github.workspace }}/test-output:/test-output local-md-to-pdf-test /test-files test.md /test-output
+          
+          # Verify output
+          if [ ! -f "./test-output/test.pdf" ]; then
             echo "PDF file was not created!"
             exit 1
           else
             echo "PDF file created successfully!"
             ls -la ./test-output/
           fi
+  
+  # Then test the action using the pre-built DockerHub image
+  test-dockerhub:
+    name: Test DockerHub Image
+    runs-on: ubuntu-latest
+    needs: test-local
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Test Action Using DockerHub Image
+        uses: ./
+        with:
+          markdown_file: 'README.md'
+          output_dir: './dockerhub-test-output'
+          table_of_contents: 'true'
+      
+      - name: Verify Output
+        run: |
+          if [ ! -f "./dockerhub-test-output/README.pdf" ]; then
+            echo "PDF file was not created using DockerHub image!"
+            exit 1
+          else
+            echo "PDF file created successfully using DockerHub image!"
+            ls -la ./dockerhub-test-output/
+          fi
       
       - name: Upload PDF as artifact
         uses: actions/upload-artifact@v4
         with:
           name: test-pdf
-          path: './test-output/*.pdf'
+          path: './dockerhub-test-output/*.pdf'
