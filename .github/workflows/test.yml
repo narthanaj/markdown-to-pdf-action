@@ -47,7 +47,7 @@ jobs:
             ls -la ./test-output/
           fi
   
-  # Then test the action using the pre-built DockerHub image
+  #test the action using the pre-built DockerHub image
   test-dockerhub:
     name: Test DockerHub Image
     runs-on: ubuntu-latest
