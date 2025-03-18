@@ -10,6 +10,7 @@ A GitHub Action that converts Markdown files to beautifully formatted PDF docume
 - 🖌️ Syntax highlighting for code blocks
 - 📏 Adjustable page sizes and margins
 - 🔄 Configurable conversion options
+- 🚀 Uses pre-built Docker image for faster execution
 
 ## Usage
 
@@ -21,7 +22,7 @@ steps:
     uses: actions/checkout@v4
   
   - name: Convert Markdown to PDF
-    uses: narthanaj/markdown-to-pdf-action@v1
+    uses: your-username/markdown-to-pdf-action@v1
     with:
       markdown_file: 'README.md'
       output_dir: './pdf-output'
@@ -35,7 +36,7 @@ steps:
     uses: actions/checkout@v4
   
   - name: Convert Markdown to PDF
-    uses: narthanaj/markdown-to-pdf-action@v1
+    uses: your-username/markdown-to-pdf-action@v1
     with:
       markdown_dir: './docs'
       markdown_file: 'guide.md'
@@ -122,19 +123,17 @@ When `table_of_contents` is set to `true`, the action will automatically generat
 
 If you want to control where the table of contents appears, you can add the marker `[[toc]]` anywhere in your markdown file.
 
+## Docker Image
+
+This action uses a pre-built Docker image from DockerHub to improve performance and reliability. See [DOCKERHUB-SETUP.md](DOCKERHUB-SETUP.md) for details on how this is configured and maintained.
+
 ## Development
 
-To build this action for development:
+For information on local development and testing, please see [DEVELOPMENT.md](DEVELOPMENT.md).
 
-1. Clone this repository
-2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Test locally with:
-   ```
-   node convert.js ./path/to/markdown ./specific-file.md ./output-dir
-   ```
+## Security
+
+For security information, please see [SECURITY.md](SECURITY.md).
 
 ## License
 

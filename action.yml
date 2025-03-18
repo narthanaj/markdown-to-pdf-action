@@ -42,7 +42,7 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  image: 'docker://narthanaj/markdown-to-pdf-action:latest'
   args:
     - ${{ inputs.markdown_dir }}
     - ${{ inputs.markdown_file }}
