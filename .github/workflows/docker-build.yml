@@ -49,3 +49,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=narthanaj/markdown-to-pdf-action:buildcache
           cache-to: type=registry,ref=narthanaj/markdown-to-pdf-action:buildcache,mode=max
+          platforms: linux/amd64

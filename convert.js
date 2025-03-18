@@ -1,7 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
-// Using puppeteer directly for PDF generation instead of markdown-pdf
 const puppeteer = require('puppeteer');
 const markdownIt = require('markdown-it');
 const highlightjs = require('markdown-it-highlightjs');
@@ -87,10 +86,10 @@ const createCustomCss = async () => {
     }
   }
   
-  // Add default styling
+  // Add default styling with better emoji support
   css += `
     body {
-      font-family: 'Noto Sans', sans-serif;
+      font-family: 'Noto Sans', 'Noto Color Emoji', 'Symbola', sans-serif;
       line-height: 1.5;
       color: #24292e;
       max-width: 100%;
@@ -100,6 +99,7 @@ const createCustomCss = async () => {
       margin-bottom: 16px;
       font-weight: 600;
       line-height: 1.25;
+      font-family: 'Noto Sans', 'Noto Color Emoji', 'Symbola', sans-serif;
     }
     h1 { font-size: 2em; border-bottom: 1px solid #eaecef; padding-bottom: .3em; }
     h2 { font-size: 1.5em; border-bottom: 1px solid #eaecef; padding-bottom: .3em; }
@@ -178,7 +178,6 @@ const convertMarkdownToPdf = async (markdownFilePath) => {
     
     const outputPath = path.join(outputDir, pdfFileName);
     
-    // Launch puppeteer
     // Check if we're running in a Docker container (GitHub Action) or locally
     const isDocker = fs.existsSync('/.dockerenv') || process.env.GITHUB_ACTIONS;
     
@@ -212,6 +211,27 @@ const convertMarkdownToPdf = async (markdownFilePath) => {
       <body>${html}</body>
       </html>
     `);
+    
+    // Configure the page for better emoji support
+    await page.evaluateHandle('document.fonts.ready');
+
+    // Add additional font configuration for emoji support
+    await page.addStyleTag({
+      content: `
+        @font-face {
+          font-family: 'Noto Color Emoji';
+          src: local('Noto Color Emoji');
+        }
+        
+        @font-face {
+          font-family: 'Symbola';
+          src: local('Symbola');
+        }
+      `
+    });
+
+    // Ensure fonts are loaded before generating PDF
+    await page.waitForTimeout(500);
     
     // Generate PDF
     await page.pdf({
